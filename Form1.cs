@@ -22,7 +22,7 @@ namespace H1_Scenario_Tool
         public int progressVisibleTimer = 0;
 
 
-
+        public bool enableDebug = false;
 
 
         private void button3_Click(object sender, EventArgs e)
@@ -134,21 +134,7 @@ namespace H1_Scenario_Tool
 
                 process.BeginOutputReadLine();
 
-
-                // OBS //   string output = process.StandardOutput.ReadToEnd(); // Read the output from the process
-                // OBS //   process.WaitForExit(); // Wait for the process to exit
-                // OBS // 
-                // OBS // 
-                // OBS //   Thread.Sleep(100);
-                // OBS //   richTextBox1.AppendText(output + Environment.NewLine);
-                // OBS //   richTextBox1.ScrollToCaret();
-
-                // hide busy bar //
-                //progressBar1.Visible = false;
-
-                // unlock settings after build //
-
-
+ 
 
             }
             catch (Exception ex)
@@ -233,12 +219,19 @@ namespace H1_Scenario_Tool
 
             Thread.Sleep(3000);
             Invoke((Action)delegate
-            {
-                string fpath = HCEEKPath + "\\" + @"maps";
+            { 
+                string fpath = Properties.Settings.Default.HCEEK + "maps";
                 string mapsss = txtScenario.Text.Replace(".scenario", ".map");
 
+                if (enableDebug == true)
+                {
+                    MessageBox.Show(Path.Combine(fpath, mapsss));
+
+                }
+                 
+
                 // Check if the file exists in the folder
-                if (File.Exists(Path.Combine(fpath, mapsss)))
+                if (File.Exists(Properties.Settings.Default.HCEEK + "maps\\" + mapsss))
                 {
                     // Start the process to open the folder in the default file explorer and highlight the file
                     Process.Start("explorer.exe", $"/select,\"{Path.Combine(fpath, mapsss)}\"");
@@ -384,9 +377,17 @@ namespace H1_Scenario_Tool
         // UI //
         private void button1_Click(object sender, EventArgs e)
         {
+
+            if (enableDebug == true)
+            {
+                MessageBox.Show(Properties.Settings.Default.HCEEK + "tags\\levels");
+
+            }
+
             try
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.InitialDirectory = Properties.Settings.Default.HCEEK + "tags\\levels";
                 openFileDialog.Filter = "Scenario files (*.scenario)|*.scenario";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -413,6 +414,7 @@ namespace H1_Scenario_Tool
             {
 
                 OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.InitialDirectory = Properties.Settings.Default.HCEEK;
                 openFileDialog.Filter = "Tool.exe file (*.exe)|*.exe";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -423,7 +425,7 @@ namespace H1_Scenario_Tool
 
                     string toolFilePath = filePath.Replace("tool.exe", "");  // example D:\SteamLibrary\steamapps\common\HCEEK\tool.exe
 
-                    MessageBox.Show(toolFilePath);
+                    // MessageBox.Show(toolFilePath);
 
                     if (toolFilePath != Properties.Settings.Default.HCEEK)
                     {
@@ -505,7 +507,7 @@ namespace H1_Scenario_Tool
                     else
                     {
 
-                        MessageBox.Show("Please select a HCEEK directory.");
+                        MessageBox.Show("Could not find HCEEK directory. Closing.");
                         if (txtScenario.Text == "")
                         {
                             button3.Enabled = false;
@@ -514,7 +516,7 @@ namespace H1_Scenario_Tool
                         {
                             button3.Enabled = true;
                         }
-                        Application.Restart();
+                        Application.Exit();
                     }
                 }
             }
@@ -692,8 +694,14 @@ namespace H1_Scenario_Tool
 
         private void button5_Click(object sender, EventArgs e)
         {
-            string fpath = HCEEKPath + "\\" + @"maps";
+            string fpath = Properties.Settings.Default.HCEEK + "maps";
             string mapsss = txtScenario.Text.Replace(".scenario", ".map");
+
+            if (enableDebug == true)
+            {
+                MessageBox.Show(Path.Combine(fpath, mapsss));
+
+            }
 
             // Check if the file exists in the folder
             if (File.Exists(Path.Combine(fpath, mapsss)))
@@ -703,7 +711,7 @@ namespace H1_Scenario_Tool
             }
             else
             {
-                MessageBox.Show(Path.Combine(fpath, mapsss));
+                Process.Start("explorer.exe", fpath);
             }
         }
     }
